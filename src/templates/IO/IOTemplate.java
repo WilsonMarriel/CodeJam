@@ -38,7 +38,6 @@ public class IOTemplate {
 			out = new PrintWriter(OUTPUT);
 
 			int number_of_cases = in.nextInt();
-			in.nextLine();
 			for (int c = 0; c < number_of_cases; c++) {
 				out.print("Case #" + (c + 1) + ": ");
 				log("Solving case " + (c + 1) + "...", 1);
@@ -47,7 +46,6 @@ public class IOTemplate {
 				endTimer(1);
 				out.println();
 			}
-			out.println();
 			out.flush();
 			out.close();
 			in.close();
