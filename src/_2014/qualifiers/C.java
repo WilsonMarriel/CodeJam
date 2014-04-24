@@ -1,4 +1,4 @@
-package _2014.qualifiers;
+package _2014.Qualifiers;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

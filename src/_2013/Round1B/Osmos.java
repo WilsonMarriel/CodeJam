@@ -1,4 +1,4 @@
-package practice;
+package _2013.Round1B;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,13 +8,12 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class Consonants {
+public class Osmos {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
@@ -29,31 +28,46 @@ public class Consonants {
 	static Scanner in;
 	static PrintWriter out;
 	static long startTime;
-	final static List<Character> vowels = Arrays.asList('a', 'e', 'i', 'o', 'u');
 
 	private static void caseSolver() {
-		String name = in.next();
-		int n = in.nextInt();
-		int len = name.length();
-		long n_value = 0;
-
-		ArrayList<Integer> charset = new ArrayList<Integer>();
-		for (int i = 0; i < len; i++) {
-			if (!vowels.contains(name.charAt(i)))
-				charset.add(i);
+		int A = in.nextInt();
+		int N = in.nextInt();
+		ArrayList<Integer> motes = new ArrayList<Integer>(N);
+		for (int i = 0; i < N; i++) {
+			motes.add(in.nextInt());
 		}
-
-		int clen = charset.size();
-		int old = -1;
-		for (int i = 0; (i < clen) && (i + n - 1 < clen); i++) {
-			int start = charset.get(i);
-			int end = charset.get(i + n - 1);
-			if (end - start + 1 != n)
-				continue;
-			n_value += (long) (((long) (start - old)) * ((long) (len - end)));
-			old = start;
+		if (A == 1) {
+			out.print(N);
+			return;
 		}
-		out.print(n_value);
+		Collections.sort(motes);
+
+		int minCount = motes.size();
+		int removed = 0;
+		while (!motes.isEmpty()) {
+			int fakeA = A;
+			ArrayList<Integer> fakeMotes = new ArrayList<>(motes);
+			int count = removed;
+			while (!fakeMotes.isEmpty()) {
+				while (!fakeMotes.isEmpty() && fakeA > fakeMotes.get(0)) {
+					fakeA += fakeMotes.get(0);
+					fakeMotes.remove(0);
+				}
+				if (fakeMotes.isEmpty())
+					break;
+				fakeA = 2 * fakeA - 1;
+				count++;
+				if (count > minCount)
+					break;
+			}
+			if (minCount > count)
+				minCount = count;
+			if (minCount - removed <= 0)
+				break;
+			motes.remove(motes.size() - 1);
+			removed++;
+		}
+		out.print(minCount);
 	}
 
 	/*

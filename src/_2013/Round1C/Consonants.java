@@ -1,4 +1,4 @@
-package practice;
+package _2013.Round1C;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,15 +7,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class ManageYourEnergy_small {
+public class Consonants {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
-	final static String FILE_NAME = "B-small-practice";// <<<--------
+	final static String FILE_NAME = "A-large-practice";// <<<--------
 
 	final static String BASE = "C:/CodeJam/" + FILE_NAME;
 	final static String SOURCE_FOLDER = "src";// <--- Eclipse standard
@@ -26,39 +29,31 @@ public class ManageYourEnergy_small {
 	static Scanner in;
 	static PrintWriter out;
 	static long startTime;
-	static long maxgain;
-	static long R;
-	static long E;
-	static long N;
-	static long[] v;
+	final static List<Character> vowels = Arrays.asList('a', 'e', 'i', 'o', 'u');
 
 	private static void caseSolver() {
-		E = in.nextLong();
-		R = in.nextLong();
-		N = in.nextLong();
-		v = new long[(int) N];
-		for (long i = 0; i < N; i++)
-			v[(int) i] = in.nextLong();
-		long energy = E;
-		maxgain = 0;
-		solve(energy, 0, 0);
-		out.print(maxgain);
-	}
+		String name = in.next();
+		int n = in.nextInt();
+		int len = name.length();
+		long n_value = 0;
 
-	static void solve(long energy, long pos, long gain) {
-		if (pos != N - 1) {
-			long i = energy - E + R;
-			if (i < 0)
-				i = 0;
-			for (; i <= energy; i++) {
-				solve(energy - i + R, pos + 1, gain + v[(int) pos] * i);
-			}
-		} else {
-			for (int i = 0; i <= energy; i++) {
-				if (maxgain < gain + v[(int) pos] * i)
-					maxgain = gain + v[(int) pos] * i;
-			}
+		ArrayList<Integer> charset = new ArrayList<Integer>();
+		for (int i = 0; i < len; i++) {
+			if (!vowels.contains(name.charAt(i)))
+				charset.add(i);
 		}
+
+		int clen = charset.size();
+		int old = -1;
+		for (int i = 0; (i < clen) && (i + n - 1 < clen); i++) {
+			int start = charset.get(i);
+			int end = charset.get(i + n - 1);
+			if (end - start + 1 != n)
+				continue;
+			n_value += (long) (((long) (start - old)) * ((long) (len - end)));
+			old = start;
+		}
+		out.print(n_value);
 	}
 
 	/*

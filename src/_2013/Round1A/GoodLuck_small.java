@@ -1,4 +1,4 @@
-package practice;
+package _2013.Round1A;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,17 +7,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class TheGreatWall_small {
+public class GoodLuck_small {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
-	final static String FILE_NAME = "C-small-practice";// <<<--------
+	final static String FILE_NAME = "C-small-practice-1";// <<<--------
 
 	final static String BASE = "C:/CodeJam/" + FILE_NAME;
 	final static String SOURCE_FOLDER = "src";// <--- Eclipse standard
@@ -28,84 +27,92 @@ public class TheGreatWall_small {
 	static Scanner in;
 	static PrintWriter out;
 	static long startTime;
-	final static int WALL_MIDDLE = 400;// doubled wall_mid to fit .5 numbers
-	final static int MAX_DAYS = 676060;
+	@SuppressWarnings("serial")
+	final static HashSet<Integer> primes = new HashSet<Integer>() {
+		{
+			add(2);
+			add(3);
+			add(5);
+		}
+	};
 
 	private static void caseSolver() {
+		out.println();
+		int R = in.nextInt();
 		int N = in.nextInt();
-		int[] wall = new int[2 * WALL_MIDDLE + 1];/* -wall_mid, 0, +wall_mid */// includes .5 spots
-		HashMap<Integer, HashMap<Integer, Integer[]>> tribes = new HashMap<Integer, HashMap<Integer, Integer[]>>();
-		HashMap<Integer, Integer[]> attack = new HashMap<Integer, Integer[]>();
-		int first_day = MAX_DAYS;
-		int last_day = 0;
+		int M = in.nextInt();
+		int K = in.nextInt();
 
-		for (int i = 0; i < N; i++) {
-			HashMap<Integer, Integer[]> tribe = new HashMap<Integer, Integer[]>();// new tribe
-			int d = in.nextInt();
-			int n = in.nextInt();
-			int w = in.nextInt();
-			int e = in.nextInt();
-			int s = in.nextInt();
-			int delta_d = in.nextInt();
-			int delta_p = in.nextInt();
-			int delta_s = in.nextInt();
-			for (int j = 0; j < n; j++) {
-				int ww = WALL_MIDDLE + 2 * (w + j * delta_p);
-				int ee = WALL_MIDDLE + 2 * (e + j * delta_p);
-				int dd = d + j * delta_d;
-				int ss = s + j * delta_s;
-				Integer[] empty_wall = new Integer[2 * WALL_MIDDLE + 1];
-				Arrays.fill(empty_wall, 0);
-				tribe.put(dd, empty_wall);// new day of attack
-				for (int k = ww; k <= ee; k++) {
-					Integer[] aux = tribe.get(dd);
-					aux[k] = ss;
-					tribe.put(dd, aux);
-					if (!attack.containsKey(dd)) {
-						empty_wall = new Integer[2 * WALL_MIDDLE + 1];
-						Arrays.fill(empty_wall, 0);
-						empty_wall[k] = ss;
-						attack.put(dd, empty_wall);
-					} else if (ss > attack.get(dd)[k]) {
-						Integer[] aux2 = attack.get(dd);
-						aux2[k] = ss;
-						attack.put(dd, aux2);
+		for (int i = 0; i < R; i++) {
+			int[] quant = new int[M + 1];
+			int[] max = new int[M + 1];
+
+			for (int index = 0; index < K; index++) {
+				int product = in.nextInt();
+				int[] count = new int[M + 1];
+				int[] pot = new int[M + 1];
+				for (Integer p : primes) {
+					if (p > M)
+						continue;
+					pot[p] = p;
+					while (product % pot[p] == 0) {
+						pot[p] *= p;
+						count[p]++;
+					}
+					if (count[p] > max[p])
+						max[p] = count[p];
+				}
+			}
+
+			// logic start
+			int total = 0;
+			for (Integer p : primes) {
+				if (p > M)
+					continue;
+				if (p != 2) {
+					if (!(max[p] == 0)) {
+						quant[p] = max[p];
+						total += quant[p];
 					}
 				}
 			}
-			tribes.put(i, tribe);
-			if (d + (n - 1) * delta_d > last_day)
-				last_day = d + (n - 1) * delta_d;
-			if (d < first_day)
-				first_day = d;
-		}
+			if ((N - total) != 0) {
+				if ((N - total) == 1) {
+					if (max[2] == 1)
+						quant[2]++;
+					else
+						quant[4]++;
+				} else if ((N - total) == 2) {
+					if (max[2] <= 2)
+						quant[2] += 2;
+					else if (max[2] == 3)
+						quant[2] = quant[4] = 1;
+					else
+						quant[4] += 2;
+				} else if ((N - total) == 3) {
+					if (max[2] <= 3)
+						quant[2] += 3;
+					else if (max[2] == 4) {
+						quant[2] = 2;
+						quant[4] = 1;
+					} else if (max[2] == 5) {
+						quant[2] = 1;
+						quant[4] = 2;
+					} else
+						quant[4] += 3;
+				}
+			}
+			// logic end
 
-		int counter = 0;
-		for (int i = first_day; i <= last_day; i++) {
-			// check attacks that succeeded
-			for (int j = 0; j < N; j++) {
-				if (tribes.containsKey(j) && tribes.get(j).containsKey(i)) {
-					int ww = 0;
-					int ee = 2 * WALL_MIDDLE;
-					for (int k = ww; k <= ee; k++) {
-						if (tribes.get(j).get(i)[k] > wall[k]) {
-							counter++;
-							break;
-						}
-					}
+			// print start
+			for (int j = 2; j <= M; j++) {
+				for (int k = 0; k < quant[j]; k++) {
+					out.print(j);
 				}
 			}
-			// after battles the wall is build
-			if (attack.containsKey(i)) {
-				int ww = 0;
-				int ee = 2 * WALL_MIDDLE;
-				for (int k = ww; k <= ee; k++) {
-					if (attack.get(i)[k] > wall[k])
-						wall[k] = attack.get(i)[k];
-				}
-			}
+			out.println();
+			// print end
 		}
-		out.print(counter);
 	}
 
 	/*

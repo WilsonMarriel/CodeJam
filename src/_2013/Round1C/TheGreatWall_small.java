@@ -1,4 +1,4 @@
-package practice;
+package _2013.Round1C;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,15 +7,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class Pogo_small {
+public class TheGreatWall_small {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
-	final static String FILE_NAME = "B-small-practice";// <<<--------
+	final static String FILE_NAME = "C-small-practice";// <<<--------
 
 	final static String BASE = "C:/CodeJam/" + FILE_NAME;
 	final static String SOURCE_FOLDER = "src";// <--- Eclipse standard
@@ -26,71 +28,84 @@ public class Pogo_small {
 	static Scanner in;
 	static PrintWriter out;
 	static long startTime;
-	static int x, y, i;
-	static StringBuilder sb;
+	final static int WALL_MIDDLE = 400;// doubled wall_mid to fit .5 numbers
+	final static int MAX_DAYS = 676060;
 
 	private static void caseSolver() {
-		int X = in.nextInt();
-		int Y = in.nextInt();
-		x = 0;
-		y = 0;
-		sb = new StringBuilder();
-		for (i = 1; X != x || Y != y; i++) {
-			if (x > X) {
-				if (i <= x - X) {
-					w();
-				} else {
-					e();
-					i++;
-					w();
+		int N = in.nextInt();
+		int[] wall = new int[2 * WALL_MIDDLE + 1];/* -wall_mid, 0, +wall_mid */// includes .5 spots
+		HashMap<Integer, HashMap<Integer, Integer[]>> tribes = new HashMap<Integer, HashMap<Integer, Integer[]>>();
+		HashMap<Integer, Integer[]> attack = new HashMap<Integer, Integer[]>();
+		int first_day = MAX_DAYS;
+		int last_day = 0;
+
+		for (int i = 0; i < N; i++) {
+			HashMap<Integer, Integer[]> tribe = new HashMap<Integer, Integer[]>();// new tribe
+			int d = in.nextInt();
+			int n = in.nextInt();
+			int w = in.nextInt();
+			int e = in.nextInt();
+			int s = in.nextInt();
+			int delta_d = in.nextInt();
+			int delta_p = in.nextInt();
+			int delta_s = in.nextInt();
+			for (int j = 0; j < n; j++) {
+				int ww = WALL_MIDDLE + 2 * (w + j * delta_p);
+				int ee = WALL_MIDDLE + 2 * (e + j * delta_p);
+				int dd = d + j * delta_d;
+				int ss = s + j * delta_s;
+				Integer[] empty_wall = new Integer[2 * WALL_MIDDLE + 1];
+				Arrays.fill(empty_wall, 0);
+				tribe.put(dd, empty_wall);// new day of attack
+				for (int k = ww; k <= ee; k++) {
+					Integer[] aux = tribe.get(dd);
+					aux[k] = ss;
+					tribe.put(dd, aux);
+					if (!attack.containsKey(dd)) {
+						empty_wall = new Integer[2 * WALL_MIDDLE + 1];
+						Arrays.fill(empty_wall, 0);
+						empty_wall[k] = ss;
+						attack.put(dd, empty_wall);
+					} else if (ss > attack.get(dd)[k]) {
+						Integer[] aux2 = attack.get(dd);
+						aux2[k] = ss;
+						attack.put(dd, aux2);
+					}
 				}
-			} else if (x < X) {
-				if (i <= X - x) {
-					e();
-				} else {
-					w();
-					i++;
-					e();
+			}
+			tribes.put(i, tribe);
+			if (d + (n - 1) * delta_d > last_day)
+				last_day = d + (n - 1) * delta_d;
+			if (d < first_day)
+				first_day = d;
+		}
+
+		int counter = 0;
+		for (int i = first_day; i <= last_day; i++) {
+			// check attacks that succeeded
+			for (int j = 0; j < N; j++) {
+				if (tribes.containsKey(j) && tribes.get(j).containsKey(i)) {
+					int ww = 0;
+					int ee = 2 * WALL_MIDDLE;
+					for (int k = ww; k <= ee; k++) {
+						if (tribes.get(j).get(i)[k] > wall[k]) {
+							counter++;
+							break;
+						}
+					}
 				}
-			} else if (y > Y) {
-				if (i <= y - Y) {
-					s();
-				} else {
-					n();
-					i++;
-					s();
-				}
-			} else if (y < Y) {
-				if (i <= Y - y) {
-					n();
-				} else {
-					s();
-					i++;
-					n();
+			}
+			// after battles the wall is build
+			if (attack.containsKey(i)) {
+				int ww = 0;
+				int ee = 2 * WALL_MIDDLE;
+				for (int k = ww; k <= ee; k++) {
+					if (attack.get(i)[k] > wall[k])
+						wall[k] = attack.get(i)[k];
 				}
 			}
 		}
-		out.print(sb.toString());
-	}
-
-	static void e() {
-		x += i;
-		sb.append("E");
-	}
-
-	static void w() {
-		x -= i;
-		sb.append("W");
-	}
-
-	static void n() {
-		y += i;
-		sb.append("N");
-	}
-
-	static void s() {
-		y -= i;
-		sb.append("S");
+		out.print(counter);
 	}
 
 	/*

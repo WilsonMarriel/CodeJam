@@ -1,4 +1,4 @@
-package templates.IO;
+package _2013.Round1A;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,26 +11,61 @@ import java.util.Locale;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class IOTemplate {
+public class ManageYourEnergy_small {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
-	final static String FILE_NAME = "";// <<<--------
+	final static String FILE_NAME = "B-small-practice";// <<<--------
 
-	final static String BASE = "C:/CodeJam/";
+	final static String BASE = "C:/CodeJam/" + FILE_NAME;
 	final static String SOURCE_FOLDER = "src";// <--- Eclipse standard
-	final static String INPUT = BASE + FILE_NAME + ".in";
-	final static String OUTPUT = BASE + FILE_NAME + ".out";
+	final static String INPUT = BASE + ".in";
+	final static String OUTPUT = BASE + ".out";
 	final static String FILE_SEPARATOR = System.getProperty("file.separator");
+	final static String LINE_SEPARATOR = System.getProperty("line.separator");
 	static Scanner in;
 	static PrintWriter out;
 	static long startTime;
+	static long maxgain;
+	static long R;
+	static long E;
+	static long N;
+	static long[] v;
 
 	private static void caseSolver() {
-		// TODO: implement caseSolver
+		E = in.nextLong();
+		R = in.nextLong();
+		N = in.nextLong();
+		v = new long[(int) N];
+		for (long i = 0; i < N; i++)
+			v[(int) i] = in.nextLong();
+		long energy = E;
+		maxgain = 0;
+		solve(energy, 0, 0);
+		out.print(maxgain);
 	}
 
-	// XXXXXXXXXXXXXXXXXX-----CODEJAM TEMPLATE-----XXXXXXXXXXXXXXXXXX
+	static void solve(long energy, long pos, long gain) {
+		if (pos != N - 1) {
+			long i = energy - E + R;
+			if (i < 0)
+				i = 0;
+			for (; i <= energy; i++) {
+				solve(energy - i + R, pos + 1, gain + v[(int) pos] * i);
+			}
+		} else {
+			for (int i = 0; i <= energy; i++) {
+				if (maxgain < gain + v[(int) pos] * i)
+					maxgain = gain + v[(int) pos] * i;
+			}
+		}
+	}
+
+	/*
+	 * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	 * XXXXXXXXXXXXXXXX-----CODEJAM IO TEMPLATE-----XXXXXXXXXXXXXXXXX
+	 * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	 */
 	public static void main(String[] args) {
 		try {
 			in = new Scanner(new FileReader(INPUT));
@@ -66,16 +101,13 @@ public class IOTemplate {
 		StringTokenizer st = new StringTokenizer(className, ".");
 
 		while (st.hasMoreElements()) {
-			String elementName = st.nextElement().toString();
-			classPath += FILE_SEPARATOR + elementName;
-			if (!st.hasMoreElements())
-				className = elementName;
+			classPath += FILE_SEPARATOR + st.nextElement().toString();
 		}
 
 		classPath += ".java";
 
 		try {
-			Files.copy(new File(classPath).toPath(), new File(BASE + className + ".java").toPath(),
+			Files.copy(new File(classPath).toPath(), new File(BASE + ".java").toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -100,6 +132,5 @@ public class IOTemplate {
 			System.out.println((endTime - startTime) + " ms");
 		}
 	}
-	// XXXXXXXXXXXXXXXXXX-----CODEJAM TEMPLATE-----XXXXXXXXXXXXXXXXXX
 	// XXXXXXXXXXXXXXXX-----CODEJAM IO TEMPLATE-----XXXXXXXXXXXXXXXXX
 }

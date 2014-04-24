@@ -1,4 +1,4 @@
-package practice;
+package _2013.Round1A;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,17 +7,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
-public class Osmos {
+public class ManageYourEnergy_large {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
-	final static String FILE_NAME = "A-large-practice";// <<<--------
+	final static String FILE_NAME = "B-large-practice";// <<<--------
 
 	final static String BASE = "C:/CodeJam/" + FILE_NAME;
 	final static String SOURCE_FOLDER = "src";// <--- Eclipse standard
@@ -30,44 +29,53 @@ public class Osmos {
 	static long startTime;
 
 	private static void caseSolver() {
-		int A = in.nextInt();
+		long E = in.nextLong();
+		long R = in.nextLong();
 		int N = in.nextInt();
-		ArrayList<Integer> motes = new ArrayList<Integer>(N);
-		for (int i = 0; i < N; i++) {
-			motes.add(in.nextInt());
-		}
-		if (A == 1) {
-			out.print(N);
-			return;
-		}
-		Collections.sort(motes);
+		long[] v = new long[N];
+		for (int i = 0; i < N; i++)
+			v[i] = in.nextLong();
+		int[] nextBigger = new int[N];
+		long gain = 0;
+		long energy = E;
+		Stack<Integer> big = new Stack<Integer>();
 
-		int minCount = motes.size();
-		int removed = 0;
-		while (!motes.isEmpty()) {
-			int fakeA = A;
-			ArrayList<Integer> fakeMotes = new ArrayList<>(motes);
-			int count = removed;
-			while (!fakeMotes.isEmpty()) {
-				while (!fakeMotes.isEmpty() && fakeA > fakeMotes.get(0)) {
-					fakeA += fakeMotes.get(0);
-					fakeMotes.remove(0);
-				}
-				if (fakeMotes.isEmpty())
-					break;
-				fakeA = 2 * fakeA - 1;
-				count++;
-				if (count > minCount)
+		for (int i = N - 1; i >= 0; i--) {
+			while (!big.isEmpty()) {
+				if (v[i] >= v[big.peek()])
+					big.pop();
+				else
 					break;
 			}
-			if (minCount > count)
-				minCount = count;
-			if (minCount - removed <= 0)
-				break;
-			motes.remove(motes.size() - 1);
-			removed++;
+			int h = 0;
+			if (big.isEmpty())
+				h = -1;
+			else
+				h = big.peek();
+			nextBigger[i] = h;
+			big.push(i);
 		}
-		out.print(minCount);
+
+		for (int i = 0; i < N; i++) {
+			if (nextBigger[i] == -1) {
+				gain += energy * v[i];
+				energy = 0;
+			} else {
+				long diff = nextBigger[i] - i;
+				long left = energy - E + diff * R;
+				if (left > E)
+					left = E;
+				if (left > 0) {
+					gain += left * v[i];
+					energy -= left;
+				}
+			}
+			energy += R;
+			if (energy > E)
+				energy = E;
+		}
+
+		out.print(gain);
 	}
 
 	/*

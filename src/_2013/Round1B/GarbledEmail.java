@@ -1,4 +1,4 @@
-package practice;
+package _2013.Round1B;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,84 +7,69 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Scanner;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
-public class ManageYourEnergy_large {
+public class GarbledEmail {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
-	final static String FILE_NAME = "B-large-practice";// <<<--------
+	final static String FILE_NAME = "C-small-practice";// <<<--------
 
-	final static String BASE = "C:/CodeJam/" + FILE_NAME;
+	final static String BASE = "C:/CodeJam/";
 	final static String SOURCE_FOLDER = "src";// <--- Eclipse standard
-	final static String INPUT = BASE + ".in";
-	final static String OUTPUT = BASE + ".out";
+	final static String INPUT = BASE + FILE_NAME + ".in";
+	final static String OUTPUT = BASE + FILE_NAME + ".out";
 	final static String FILE_SEPARATOR = System.getProperty("file.separator");
-	final static String LINE_SEPARATOR = System.getProperty("line.separator");
 	static Scanner in;
 	static PrintWriter out;
 	static long startTime;
+	static int MAXLEN = 10;
+	static HashSet<String> dictionary;
+	static int minchanges = 800;
+	static StringBuilder word;
+	static int wordlen;
 
 	private static void caseSolver() {
-		long E = in.nextLong();
-		long R = in.nextLong();
-		int N = in.nextInt();
-		long[] v = new long[N];
-		for (int i = 0; i < N; i++)
-			v[i] = in.nextLong();
-		int[] nextBigger = new int[N];
-		long gain = 0;
-		long energy = E;
-		Stack<Integer> big = new Stack<Integer>();
-
-		for (int i = N - 1; i >= 0; i--) {
-			while (!big.isEmpty()) {
-				if (v[i] >= v[big.peek()])
-					big.pop();
-				else
-					break;
-			}
-			int h = 0;
-			if (big.isEmpty())
-				h = -1;
-			else
-				h = big.peek();
-			nextBigger[i] = h;
-			big.push(i);
-		}
-
-		for (int i = 0; i < N; i++) {
-			if (nextBigger[i] == -1) {
-				gain += energy * v[i];
-				energy = 0;
-			} else {
-				long diff = nextBigger[i] - i;
-				long left = energy - E + diff * R;
-				if (left > E)
-					left = E;
-				if (left > 0) {
-					gain += left * v[i];
-					energy -= left;
-				}
-			}
-			energy += R;
-			if (energy > E)
-				energy = E;
-		}
-
-		out.print(gain);
+		word = new StringBuilder(in.next());
+		wordlen = word.length();
+		minchanges = wordlen / 5 + 1;
 	}
 
-	/*
-	 * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-	 * XXXXXXXXXXXXXXXX-----CODEJAM IO TEMPLATE-----XXXXXXXXXXXXXXXXX
-	 * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-	 */
+	@SuppressWarnings("resource")
+	private static void readFile(String filePath) {
+		try {
+			dictionary = new HashSet<String>();
+			Scanner reader = new Scanner(new FileReader(filePath));
+			reader.useLocale(Locale.US);
+			while (reader.hasNext()) {
+				String line = reader.nextLine();
+				dictionary.add(line);
+				for (int i = 0; i < line.length(); i++) {
+					StringBuilder mline = new StringBuilder(line);
+					mline.setCharAt(i, '*');
+					dictionary.add(mline.toString());
+				}
+				for (int i = 0; i < line.length(); i++) {
+					for (int j = i + 5; j < line.length(); j++) {
+						StringBuilder mline = new StringBuilder(line);
+						mline.setCharAt(i, '*');
+						mline.setCharAt(j, '*');
+						dictionary.add(mline.toString());
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// XXXXXXXXXXXXXXXXXX-----CODEJAM TEMPLATE-----XXXXXXXXXXXXXXXXXX
 	public static void main(String[] args) {
 		try {
+			readFile(BASE + "garbled_email_dictionary.txt");
 			in = new Scanner(new FileReader(INPUT));
 			in.useLocale(Locale.US);
 			out = new PrintWriter(OUTPUT);
@@ -118,13 +103,16 @@ public class ManageYourEnergy_large {
 		StringTokenizer st = new StringTokenizer(className, ".");
 
 		while (st.hasMoreElements()) {
-			classPath += FILE_SEPARATOR + st.nextElement().toString();
+			String elementName = st.nextElement().toString();
+			classPath += FILE_SEPARATOR + elementName;
+			if (!st.hasMoreElements())
+				className = elementName;
 		}
 
 		classPath += ".java";
 
 		try {
-			Files.copy(new File(classPath).toPath(), new File(BASE + ".java").toPath(),
+			Files.copy(new File(classPath).toPath(), new File(BASE + className + ".java").toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -149,5 +137,5 @@ public class ManageYourEnergy_large {
 			System.out.println((endTime - startTime) + " ms");
 		}
 	}
-	// XXXXXXXXXXXXXXXX-----CODEJAM IO TEMPLATE-----XXXXXXXXXXXXXXXXX
+	// XXXXXXXXXXXXXXXXXX-----CODEJAM TEMPLATE-----XXXXXXXXXXXXXXXXXX
 }

@@ -1,4 +1,4 @@
-package practice;
+package _2013.Round1C;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,16 +7,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class GoodLuck_small {
+public class Pogo_small {
 	final static int DEBUG_LEVEL = 5;
 	final static int TIMER_LEVEL = 5;
 
-	final static String FILE_NAME = "C-small-practice-1";// <<<--------
+	final static String FILE_NAME = "B-small-practice";// <<<--------
 
 	final static String BASE = "C:/CodeJam/" + FILE_NAME;
 	final static String SOURCE_FOLDER = "src";// <--- Eclipse standard
@@ -27,92 +26,71 @@ public class GoodLuck_small {
 	static Scanner in;
 	static PrintWriter out;
 	static long startTime;
-	@SuppressWarnings("serial")
-	final static HashSet<Integer> primes = new HashSet<Integer>() {
-		{
-			add(2);
-			add(3);
-			add(5);
-		}
-	};
+	static int x, y, i;
+	static StringBuilder sb;
 
 	private static void caseSolver() {
-		out.println();
-		int R = in.nextInt();
-		int N = in.nextInt();
-		int M = in.nextInt();
-		int K = in.nextInt();
-
-		for (int i = 0; i < R; i++) {
-			int[] quant = new int[M + 1];
-			int[] max = new int[M + 1];
-
-			for (int index = 0; index < K; index++) {
-				int product = in.nextInt();
-				int[] count = new int[M + 1];
-				int[] pot = new int[M + 1];
-				for (Integer p : primes) {
-					if (p > M)
-						continue;
-					pot[p] = p;
-					while (product % pot[p] == 0) {
-						pot[p] *= p;
-						count[p]++;
-					}
-					if (count[p] > max[p])
-						max[p] = count[p];
+		int X = in.nextInt();
+		int Y = in.nextInt();
+		x = 0;
+		y = 0;
+		sb = new StringBuilder();
+		for (i = 1; X != x || Y != y; i++) {
+			if (x > X) {
+				if (i <= x - X) {
+					w();
+				} else {
+					e();
+					i++;
+					w();
+				}
+			} else if (x < X) {
+				if (i <= X - x) {
+					e();
+				} else {
+					w();
+					i++;
+					e();
+				}
+			} else if (y > Y) {
+				if (i <= y - Y) {
+					s();
+				} else {
+					n();
+					i++;
+					s();
+				}
+			} else if (y < Y) {
+				if (i <= Y - y) {
+					n();
+				} else {
+					s();
+					i++;
+					n();
 				}
 			}
-
-			// logic start
-			int total = 0;
-			for (Integer p : primes) {
-				if (p > M)
-					continue;
-				if (p != 2) {
-					if (!(max[p] == 0)) {
-						quant[p] = max[p];
-						total += quant[p];
-					}
-				}
-			}
-			if ((N - total) != 0) {
-				if ((N - total) == 1) {
-					if (max[2] == 1)
-						quant[2]++;
-					else
-						quant[4]++;
-				} else if ((N - total) == 2) {
-					if (max[2] <= 2)
-						quant[2] += 2;
-					else if (max[2] == 3)
-						quant[2] = quant[4] = 1;
-					else
-						quant[4] += 2;
-				} else if ((N - total) == 3) {
-					if (max[2] <= 3)
-						quant[2] += 3;
-					else if (max[2] == 4) {
-						quant[2] = 2;
-						quant[4] = 1;
-					} else if (max[2] == 5) {
-						quant[2] = 1;
-						quant[4] = 2;
-					} else
-						quant[4] += 3;
-				}
-			}
-			// logic end
-
-			// print start
-			for (int j = 2; j <= M; j++) {
-				for (int k = 0; k < quant[j]; k++) {
-					out.print(j);
-				}
-			}
-			out.println();
-			// print end
 		}
+		out.print(sb.toString());
+	}
+
+	static void e() {
+		x += i;
+		sb.append("E");
+	}
+
+	static void w() {
+		x -= i;
+		sb.append("W");
+	}
+
+	static void n() {
+		y += i;
+		sb.append("N");
+	}
+
+	static void s() {
+		y -= i;
+		sb.append("S");
 	}
 
 	/*
