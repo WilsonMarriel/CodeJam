@@ -31,17 +31,17 @@ public class BullsEye_large {
 	private static void caseSolver() {
 		r = in.nextBigInteger();
 		BigInteger t = in.nextBigInteger();
-		long esq = 1L;
-		long dir = 1L << 62;
+		long left = 1L;
+		long right = 1L << 62;
 
-		while (dir - esq > 1) {
-			long mid = (dir + esq) / 2;
+		while (right - left > 1) {
+			long mid = (right + left) / 2;
 			if (f(mid).compareTo(t) > 0)
-				dir = mid;
+				right = mid;
 			else
-				esq = mid;
+				left = mid;
 		}
-		out.print(esq);
+		out.print(left);
 	}
 
 	static BigInteger f(long x) {
